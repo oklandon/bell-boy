@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest --config jest.json",
-    "start": "babel && node ./run.js"
+    "start": "node ./run.js"
   },
   "devDependencies": {
     "jest": "^24.9.0"
