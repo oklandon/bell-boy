@@ -1,0 +1,7 @@
+{
+	"rootDir": "./",
+	"coveragePathIgnorePatterns":["<rootDir>/node_modules/", "<rootDir>/.yarn"],
+	"collectCoverageFrom": ["./*.js"],
+	"transform": {".*": "./node_modules/babel-jest"},
+	"testRegex": "./*\\.test\\.js$"
+}
