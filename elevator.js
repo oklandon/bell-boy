@@ -3,7 +3,7 @@ export function elevatorController(state, action={}){
         case 'queue':
             return {
                 ...state,
-                queue: [...state.queue, action.data]
+                jobs: [...state.jobs, action.data]
             }
         default:
             return state
@@ -25,24 +25,36 @@ export class Simulator {
             })
     }
 
+    getJobs() {
+        return this.state.jobs
+    }
+
     queueJob(targetFloor){
-        this.state = elevatorController(
-            this.state,
-            {
-                op: 'queue',
-                data: {
-                    targetFloor,
-                    assigned: false,
-                    done: false
+        if (targetFloor > 1 && targetFloor <= this.state.totalFloors) {
+            this.state = elevatorController(
+                this.state,
+                {
+                    op: 'queue',
+                    data: {
+                        targetFloor,
+                        assignedTo: null,
+                        done: false
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     assignElevator(target){
         const activeElevator = this.findClosestElevator(target)
         activeElevator.addJob(target)
-        return true
+        this.state = elevatorController(
+            this.state,
+            {
+                op: 'assign',
+                data: elevator.name
+            }
+        )
     }
 
     findClosestElevator(target) {
@@ -76,6 +88,17 @@ export class Elevator {
         this.currentFloor = targetFloor >= this.currentFloor
             ? this.currentFloor += 1
             : this.currentFloor -= 1
+        console.log(`${this.name} is on floor ${this.currentFloor}`)
+
+        if (this.targetFloors.includes(this.currentFloor)){
+            this.doorsOpen = true
+            console.log(`${this.name} has its doors open`)
+            this.setJobComplete(targetFloor)
+            this.doorsOpen = false
+            console.log(`${this.name} has its doors closed`)
+            return targetFloor
+        }
+        return false
     }
 
     where(){
@@ -94,7 +117,7 @@ export class Elevator {
         this.targetFloors = this.targetFloors.filter(f => f !== target)
         this.totalTrips += 1
         if (this.totalTrips >= 100) {
-            return false
+            this.active = false
         }
     }
 }

@@ -9,6 +9,28 @@ test('initalizes with right amount of elevators', () => {
     expect(sim2.getState().elevators.length).toEqual(1000)
 })
 
+test('queues a job', () => {
+    let sim = new Simulator(1, 20)
+    sim.queueJob(15)
+    sim.queueJob(12)
+
+    let jobs = [{
+       assignedTo: null,
+       done: false,
+       targetFloor: 15,
+     },
+     {
+       assignedTo: null,
+       done: false,
+       targetFloor: 12,
+     }]
+
+    expect(sim.getJobs()).toEqual(jobs)
+    // won't queue job out of range
+    sim.queueJob(100)
+    expect(sim.getJobs()).toEqual(jobs)
+})
+
 test('move elevator', () => {
     let onFloorOne = new Elevator(10, 'Craigary', 1)
 
