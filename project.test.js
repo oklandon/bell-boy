@@ -31,3 +31,13 @@ test('find where elevator is', () => {
     }
     expect(onFloorThree.where()).toEqual(6)
 })
+
+test('calculates elevator distance', () => {
+    let onOne =  new Elevator(10, 'Darrryl', 1)
+
+    // figures upper correctly
+    expect(onOne.distance(10)).toEqual(9)
+    // figures distance from lower floor too
+    let onTen=  new Elevator(10, 'jojo', 10)
+    expect(onTen.distance(3)).toEqual(7)
+})

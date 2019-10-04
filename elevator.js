@@ -1,14 +1,14 @@
 export function elevatorController(state, action={}){
-    switch(action.opName){
+    switch(action.op){
+        case 'queue':
+            return {
+                ...state,
+                queue: [...state.queue, action.data]
+            }
         default:
             return state
     }
 }
-
-// export default function simulate(numElevators, totalFloors){
-//     const state =
-// }
-
 
 export class Simulator {
     constructor(numElevators, totalFloors) {
@@ -20,12 +20,37 @@ export class Simulator {
             }
             this.state = elevatorController({
                 elevators,
-                totalFloors
+                totalFloors,
+                jobs: []
             })
     }
 
-    summonElevator(floorNumber){
+    queueJob(targetFloor){
+        this.state = elevatorController(
+            this.state,
+            {
+                op: 'queue',
+                data: {
+                    targetFloor,
+                    assigned: false,
+                    done: false
+                }
+            }
+        )
+    }
+
+    assignElevator(target){
+        const activeElevator = this.findClosestElevator(target)
+        activeElevator.addJob(target)
         return true
+    }
+
+    findClosestElevator(target) {
+        return this.state.elevators.reduce((closest, elevator) => {
+            if (!closest || closest.distance(target) < elevator.distance(target)){
+                return elevator
+            }
+        }, null)
     }
 
     getState(){
@@ -38,11 +63,11 @@ export class Elevator {
     constructor(topFloor, name, currentFloor=1) {
         this.name= name
         this.currentFloor = currentFloor
-        this.targetFloor = null
-        this.door_open = false
-        this.total_trips = 0
+        this.targetFloors = []
+        this.doorOpen = false
+        this.totalTrips = 0
         // why keep track of this??
-        this.floors_passed = 0
+        this.floorsPassed = 0
         this.active = true
         this.topFloor = topFloor
     }
@@ -57,7 +82,19 @@ export class Elevator {
         return this.currentFloor
     }
 
-    declareDistance(targetFloor){
+    distance(targetFloor){
         return Math.abs(targetFloor - this.currentFloor)
+    }
+
+    addJob(targetFloor){
+        this.targetFloors = [...this.targetFloors, targetFloor]
+    }
+
+    setJobComplete(target) {
+        this.targetFloors = this.targetFloors.filter(f => f !== target)
+        this.totalTrips += 1
+        if (this.totalTrips >= 100) {
+            return false
+        }
     }
 }
