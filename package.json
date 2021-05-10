@@ -16,7 +16,7 @@
     "babel-jest": "^24.9.0",
     "babel-preset-env": "^1.7.0",
     "listr": "^0.14.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "prompt": "^1.0.0"
   }
 }
